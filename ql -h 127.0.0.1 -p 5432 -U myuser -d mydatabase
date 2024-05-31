@@ -1,0 +1,28 @@
+                List of relations
+ Schema |          Name          | Type  | Owner 
+--------+------------------------+-------+-------
+ public | cache                  | table | sail
+ public | cache_locks            | table | sail
+ public | categories             | table | sail
+ public | categories_comments    | table | sail
+ public | categories_posts       | table | sail
+ public | comments               | table | sail
+ public | comments_posts         | table | sail
+ public | failed_jobs            | table | sail
+ public | files                  | table | sail
+ public | images                 | table | sail
+ public | job_batches            | table | sail
+ public | jobs                   | table | sail
+ public | likes                  | table | sail
+ public | migrations             | table | sail
+ public | password_reset_tokens  | table | sail
+ public | personal_access_tokens | table | sail
+ public | post_tag               | table | sail
+ public | posts                  | table | sail
+ public | profiles               | table | sail
+ public | roles                  | table | sail
+ public | sessions               | table | sail
+ public | tags                   | table | sail
+ public | users                  | table | sail
+(23 rows)
+
