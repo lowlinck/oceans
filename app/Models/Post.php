@@ -8,6 +8,7 @@ use App\Traits\HasFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use PhpParser\Node\Expr\Cast\String_;
 
 class Post extends Model
 {
@@ -47,4 +48,10 @@ class Post extends Model
     {
         return $this->belongsTo(Profile::class);
     }
+
+    public function getTagsAsStringAttribute(): string
+    {
+        return implode(',', $this->tags->pluck('title')->toArray());
+    }
 }
+

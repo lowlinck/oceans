@@ -27,5 +27,8 @@ class TempCommand extends Command
     {
         $post = Post::first();
         $post->delete();
+
     }
+
+
 }

@@ -21,6 +21,7 @@ class IndexRequest extends FormRequest
      */
     public function rules(): array
     {
+
         $statuses = ['draft', 'published', 'archived'];
         return [
             'title' => 'nullable|string',
@@ -32,6 +33,7 @@ class IndexRequest extends FormRequest
             'category_title' => 'nullable|string',
             'created_at_from' => 'nullable|date_format:Y-m-d',
             'created_at_to' => 'nullable|date_format:Y-m-d',
+            'page' => 'nullable|integer',
         ];
     }
 
@@ -51,5 +53,12 @@ class IndexRequest extends FormRequest
             'created_at_from.date_format' => 'Created at from must be a date in the format Y-m-d.',
             'created_at_to.date_format' => 'Created at to must be a date in the format Y-m-d.',
         ];
+    }
+
+    public function passedValidation()
+    {
+        return $this->merge([
+            'page' => $this->page ?? 1,
+        ]);
     }
 }
