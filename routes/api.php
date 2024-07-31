@@ -21,4 +21,4 @@ use Illuminate\Support\Facades\Route;
 //Route::apiResource('comments', CommentController::class);
 //Route::apiResource('tags', TagController::class);
 //Route::apiResource('categories', CategoryController::class);
-Route::middleware('api')->post('/data', [ApiController::class, 'store']);
+

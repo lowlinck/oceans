@@ -6,12 +6,12 @@
                 <Link :href="route('dashboard')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     Dashboard
                 </Link>
-                <Link :href="route('admin.posts.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
-                    Posts
-                </Link>
-                <Link :href="route('admin.categories.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
-                    Category
-                </Link>
+<!--                <Link :href="route('profiles.posts.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">-->
+<!--                    Posts-->
+<!--                </Link>-->
+<!--                <Link :href="route('profiles.categories.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">-->
+<!--                    Category-->
+<!--                </Link>-->
                 <!-- Add more links as needed -->
             </div>
         </aside>
@@ -20,7 +20,7 @@
         <div class="flex-grow flex flex-col">
             <!-- Header -->
             <header class="bg-gray-800 text-white p-4 md:p-6 lg:p-8 flex justify-between items-center">
-                <Link :href="route('dashboard')" class="text-2xl md:text-3xl lg:text-4xl font-bold">{{role}}</Link>
+                <Link :href="route('dashboard')" class="text-2xl md:text-3xl text-white lg:text-4xl font-bold">{{ userRoles.join(', ')}}</Link>
                 <Link class="text-red-700" :href="route('logout')">Logout</Link>
             </header>
 
@@ -49,23 +49,28 @@
 <script>
 import {Link} from "@inertiajs/vue3";
 import {route} from 'ziggy-js';
+
 export default {
-    name: 'AdminLayout',
+    name: 'MainLayout',
     components: {
         Link
     },
     props: {
         user:{
+
         },
         userRoles: {
             type: Array,
             default: () => ['guest']
         }
+        // Your props here
     },
 
     data() {
         return {
-           role:this.roles
+
+            roleData:this.roles
+            // Your data here
         };
     },
     methods: {

@@ -10,4 +10,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Role extends Model
 {
     use HasFactory, SoftDeletes;
+
+    public function profile()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

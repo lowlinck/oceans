@@ -38,7 +38,7 @@
 
     </div>
     <a href="#" @click.prevent="storePost" class="block mx-[500px] mt-1.5 w-[100px] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add</a>
-    <Link class="text-red-700 justify-center items-center h-screen" :href="route('posts.index')">
+    <Link class="text-red-700 justify-center items-center h-screen" :href="route('admin.posts.index')">
         Back
     </Link>
 </template>
@@ -80,7 +80,7 @@ export default {
             }
             formData.append('tags', this.tagable.tags);
 
-            axios.post('/posts', formData, {
+            axios.post('/admin/posts', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }

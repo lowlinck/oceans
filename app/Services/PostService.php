@@ -20,14 +20,20 @@ class PostService
     {
         try {
             DB::beginTransaction();
+           if ($data['post']['preview_path1'] != false){
+               $data['post']['preview_path'] = $data['post']['preview_path1'];
+           }
+            unset($data['post']['preview_path1']);
+
             $tags = TagService::storeBatch($data['tags']);
+
             $post->update($data['post']);
             $post->tags()->sync($tags);
             $post->refresh();
             DB::commit();
         }catch (\Exception $exception){
             DB::rollBack();
-            $post = Post::factory()->make();
+            print $exception->getMessage();
         }
 
 

@@ -15,7 +15,7 @@ export default {
 <template>
 
 
-        <Link :href="route('posts.index')">Posts</Link>
+        <Link :href="route('admin.posts.index')">Posts</Link>
 
 </template>
 

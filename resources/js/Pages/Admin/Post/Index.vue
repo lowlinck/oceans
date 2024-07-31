@@ -19,18 +19,24 @@
         </div>
         <div class="items-center">
             <secondary-button>
-                <Link :href="route('posts.create')">Add post</Link>
+                <Link :href="route('admin.posts.create')">Add post</Link>
             </secondary-button>
         </div>
 
         <div class="w-3/4 mb-4 pb-4 border-b border-gray-300" >
             <div class="flex flex-row justify-between border" v-for="post in postsData.data" :key="post.id">
-                <Link :href="route('posts.show', post.id)" class="mr-4">{{ post.title }}</Link>
-                <Link :href="route('posts.show', post.id)" class="mr-4">{{ post.content }}</Link>
-                <Link :href="route('posts.show', post.id)" class="mr-4">{{ post.description }}</Link>
+                <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.title }}</Link>
+                <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.content }}</Link>
+                <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.description }}</Link>
+                <Link :href="route('admin.posts.show', post.id)" class="mr-4">
+                    <div class="mb-4 pb-4 border-b border-gray-300">
+                    <img class="w-[200px]" :src="post.preview_url" :alt="post.title">
+                    </div>
+                </Link>
+
                <template class="flex justify-between">
                    <div class="mr-4">
-                       <Link :href="route('posts.edit', post.id)" class="text-green-800">Edit</Link>
+                       <Link :href="route('admin.posts.edit', post.id)" class="text-green-800">Edit</Link>
                    </div>
                    <div>
                        <a href="#" @click.prevent="deletePost(post.id) " class="">Delete</a>
@@ -86,7 +92,7 @@ export default {
 
         const getFilters = () => {
             console.log('Getting filters with:', postFilter.value); // Отладочное сообщение
-            axios.get('/posts', {
+            axios.get('/admin/posts', {
                 params: postFilter.value
             }).then(res => {
                 console.log('Data fetched:', res.data); // Отладочное сообщение

@@ -28,7 +28,6 @@
             <img :src="tagable.post.preview_url" :alt="tagable.post.title">
         </div>
         <input type="file" @change="setImage" ref="fileInput">
-
     </div>
     <div>
         <select v-model="tagable.post.category_id" class="flex flex-col gap-2 w-1/4 mx-[500px]">
@@ -36,33 +35,32 @@
             <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.title }}</option>
         </select>
         <div v-if="errors['post.category_id']" class="text-red-800 gap-2 w-1/4 mx-[500px]">
-                {{ errors['post.category_id'] }}
-          </div>
-
+            {{ errors['post.category_id'] }}
+        </div>
     </div>
-    <a href="#" @click.prevent="UpdatePost" class="block mx-[500px] mt-1.5 w-[100px]
-    bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Update</a>
-    <Link class="text-red-700 justify-center items-center h-screen" :href="route('posts.index')">
+    <a href="#" @click.prevent="updatePost" class="block mx-[500px] mt-1.5 w-[100px] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Update</a>
+    <Link class="text-red-700 inline-block items-center h-screen" :href="route('admin.posts.index')">
         Back
     </Link>
 </template>
 
 <script>
 import { Link } from "@inertiajs/vue3";
-import axios from 'axios'; // Убедитесь, что axios импортирован
+import axios from 'axios';
 
 export default {
     name: "Edit",
     components: { Link },
     props: {
         categories: Array,
-        post:Object
+        post: Object
     },
     data() {
         return {
             tagable: {
-                post:this.post,
-                tags: this.post.tags
+                post: this.post,
+                tags: this.post.tags,
+                _method: 'patch',
             },
             errors: {}
         };
@@ -71,14 +69,21 @@ export default {
         setImage(e) {
             this.tagable.post.preview_path = e.target.files[0];
         },
-        UpdatePost() {
-              axios.patch(`/posts/${this.post.id}`, this.tagable, {
+        updatePost() {
+            let formData = new FormData();
+            for (let key in this.tagable.post) {
+                formData.append(`post[${key}]`, this.tagable.post[key]);
+            }
+            formData.append('tags', this.tagable.tags);
+            formData.append('_method', 'patch');
+
+            axios.post(`/admin/posts/${this.post.id}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             })
                 .then(res => {
-                    console.log('Данные отправлены:', this.tagable);
+                    console.log('Данные отправлены:', res.data);
                     this.resetForm();
                 })
                 .catch(error => {
@@ -87,7 +92,6 @@ export default {
                     } else {
                         console.error('Ошибка при отправке данных:', error);
                     }
-
                 });
         },
         resetForm() {

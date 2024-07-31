@@ -15,6 +15,7 @@ use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,6 +27,7 @@ class PostController extends Controller
      */
     public function index(IndexRequest $request)
     {
+
         $data = $request->validationData();
         $posts = PostService::index($data);
         $posts = PostResource::collection($posts);
@@ -35,7 +37,7 @@ class PostController extends Controller
             return $posts;
         }
 
-        return inertia('Post/Index', compact('posts'));
+        return inertia('Admin/Post/Index', compact('posts', 'roles'));
     }
 
     /**
@@ -46,7 +48,7 @@ class PostController extends Controller
 
         $categories = CategoryResource::collection(Category::all())->resolve();
 
-        return inertia('Post/Create', compact('categories'));
+        return inertia('Admin/Post/Create', compact('categories'));
     }
 
     /**
@@ -70,6 +72,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+
         $post = PostResource::make($post)->resolve();
 
         return inertia('Post/Show', compact('post'));
@@ -83,7 +86,7 @@ class PostController extends Controller
         $post = PostForEditResource::make($post)->resolve();
 
         $categories = CategoryResource::collection(Category::all())->resolve();
-        return inertia('Post/Edit', compact('post', 'categories')) ;
+        return inertia('Admin/Post/Edit', compact('post', 'categories')) ;
     }
 
     /**
@@ -93,7 +96,8 @@ class PostController extends Controller
     {
 
         $data = $request->validationData();
-        dd($data);
+
+//        $data ['post']['preview_path'] = Storage::disk('public')->put('/preview_path', $data['post']['preview_path']);
         $post = PostService::update($post, $data);
         return PostResource::make($post)->resolve();
     }
