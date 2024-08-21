@@ -6,13 +6,9 @@
                 <Link :href="route('dashboard')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     Dashboard
                 </Link>
-<!--                <Link :href="route('profiles.posts.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">-->
-<!--                    Posts-->
-<!--                </Link>-->
-<!--                <Link :href="route('profiles.categories.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">-->
-<!--                    Category-->
-<!--                </Link>-->
-                <!-- Add more links as needed -->
+                <Link v-if="userRoles.includes('admin')" :href="route('admin.posts.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    Posts
+                </Link>
             </div>
         </aside>
 
@@ -20,8 +16,8 @@
         <div class="flex-grow flex flex-col">
             <!-- Header -->
             <header class="bg-gray-800 text-white p-4 md:p-6 lg:p-8 flex justify-between items-center">
-                <Link :href="route('dashboard')" class="text-2xl md:text-3xl text-white lg:text-4xl font-bold">{{ userRoles.join(', ')}}</Link>
-                <Link class="text-red-700" :href="route('logout')">Logout</Link>
+                <Link :href="route('dashboard')" class="text-2xl md:text-3xl text-white lg:text-4xl font-bold">{{ userRoles.join(', ') }}</Link>
+                <a class="text-amber-400 " href="#"  @click="logout">Logout</a>
             </header>
 
             <!-- Content -->
@@ -56,31 +52,32 @@ export default {
         Link
     },
     props: {
-        user:{
-
-        },
         userRoles: {
             type: Array,
             default: () => ['guest']
         }
-        // Your props here
-    },
-
-    data() {
-        return {
-
-            roleData:this.roles
-            // Your data here
-        };
     },
     methods: {
-        // Your methods here
-        create() {
-            // Your method implementation
+        route(name) {
+            const routes = {
+                'dashboard': '/dashboard',
+                'admin.posts.index': '/admin/posts',
+                'logout': '/logout'
+            };
+            return routes[name];
         }
     },
-    computed: {
-        // Your computed properties here
+    logout(){
+        axios.post('/logout', {
+
+        }).then(res => {
+            window.location.href = route('login');
+        }).catch(error => {
+            console.error('Error logout:', error);
+        });
+    },
+    mounted() {
+        console.log('User roles:', this.userRoles);
     }
 };
 </script>

@@ -12,6 +12,9 @@
                 <Link :href="route('admin.categories.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     Category
                 </Link>
+                <Link :href="route('admin.users.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    Users
+                </Link>
                 <!-- Add more links as needed -->
             </div>
         </aside>
@@ -20,8 +23,8 @@
         <div class="flex-grow flex flex-col">
             <!-- Header -->
             <header class="bg-gray-800 text-white p-4 md:p-6 lg:p-8 flex justify-between items-center">
-                <Link :href="route('dashboard')" class="text-2xl md:text-3xl lg:text-4xl font-bold">{{role}}</Link>
-                <Link class="text-red-700" :href="route('logout')">Logout</Link>
+                <Link :href="route('dashboard')" class="text-2xl md:text-3xl lg:text-4xl font-bold">{{userRoles.join(', ')}}</Link>
+                <a class="text-amber-400 " href="#"  @click="logout">Logout</a>
             </header>
 
             <!-- Content -->
@@ -55,8 +58,6 @@ export default {
         Link
     },
     props: {
-        user:{
-        },
         userRoles: {
             type: Array,
             default: () => ['guest']
@@ -65,10 +66,19 @@ export default {
 
     data() {
         return {
-           role:this.roles
+
         };
     },
     methods: {
+        logout(){
+            axios.post('/logout', {
+
+            }).then(res => {
+                window.location.href = route('login');
+            }).catch(error => {
+                console.error('Error logout:', error);
+            });
+        },
         // Your methods here
         create() {
             // Your method implementation

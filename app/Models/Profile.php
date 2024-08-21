@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RoleEnum;
 use App\Traits\LogsModelEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,5 +36,8 @@ class Profile extends Model
         return $this->hasMany(Role::class);
     }
 
+    protected $casts = [
+        'role' => RoleEnum::class,
+    ];
 
 }

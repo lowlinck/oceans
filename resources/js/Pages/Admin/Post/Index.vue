@@ -13,9 +13,9 @@
             <div>
                 <input type="date" v-model="postFilter.createdAtTo">
             </div>
-            <div>
-                <a @click.prevent="getFilters" class="bg-blue-800 text-white" href="#">Find</a>
-            </div>
+            <secondary-button class="bg-sky-700 text-white focus:ring-indigo-900 hover:bg-blue-600"  >
+                <a @click.prevent="getFilters"  href="#">Find</a>
+                </secondary-button>
         </div>
         <div class="items-center">
             <secondary-button>
@@ -23,29 +23,51 @@
             </secondary-button>
         </div>
 
-        <div class="w-3/4 mb-4 pb-4 border-b border-gray-300" >
-            <div class="flex flex-row justify-between border" v-for="post in postsData.data" :key="post.id">
-                <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.title }}</Link>
-                <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.content }}</Link>
-                <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.description }}</Link>
-                <Link :href="route('admin.posts.show', post.id)" class="mr-4">
-                    <div class="mb-4 pb-4 border-b border-gray-300">
-                    <img class="w-[200px]" :src="post.preview_url" :alt="post.title">
-                    </div>
-                </Link>
-
-               <template class="flex justify-between">
-                   <div class="mr-4">
-                       <Link :href="route('admin.posts.edit', post.id)" class="text-green-800">Edit</Link>
-                   </div>
-                   <div>
-                       <a href="#" @click.prevent="deletePost(post.id) " class="">Delete</a>
-                   </div>
-               </template>
-
-
-            </div>
-
+        <div>
+            <h1 class="text-2xl font-bold mb-4">Posts</h1>
+            <table class="min-w-full bg-white">
+                <thead>
+                <tr>
+                    <th class="py-2 px-4 bg-gray-800 text-white">Title</th>
+                    <th class="py-2 px-4 bg-gray-800 text-white">Content</th>
+                    <th class="py-2 px-4 bg-gray-800 text-white">Description</th>
+                    <th class="py-2 px-4 bg-gray-800 text-white">Preview</th>
+                    <th class="py-2 px-4 bg-gray-800 text-white">Bloking</th>
+                    <th class="py-2 px-4 bg-gray-800 text-white">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="post in postsData.data" :key="post.id" class="border-b">
+                    <td class="py-2 px-4">
+                        <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.title }}</Link>
+                    </td>
+                    <td class="py-2 px-4">
+                        <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.content }}</Link>
+                    </td>
+                    <td class="py-2 px-4">
+                        <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.description }}</Link>
+                    </td>
+                    <td class="py-2 px-4">
+                        <Link :href="route('admin.posts.show', post.id)">
+                            <img class="w-[200px]" :src="post.preview_url" :alt="post.title">
+                        </Link>
+                    </td>
+                    <td class="border px-4 py-2">
+                        <input type="checkbox" v-model="post.is_blocked" @change="toggleBlock(post)" />
+                    </td>
+                    <td class="py-2 px-4">
+                        <div class="flex justify-between">
+                            <div class="mr-4">
+                                <Link :href="route('admin.posts.edit', post.id)" class="text-green-800">Edit</Link>
+                            </div>
+                            <div>
+                                <a href="#" @click.prevent="deletePost(post.id)" class="text-red-800">Delete</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
         <div v-if="postsData && postsData.meta && postsData.meta.links">
@@ -64,13 +86,11 @@ import { route } from 'ziggy-js';
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import axios from 'axios';
-import Edit from "@/Pages/Profile/Edit.vue";
 
 export default {
     name: 'Index',
     layout: AdminLayout,
     components: {
-        Edit,
         SecondaryButton,
         Link
     },
@@ -91,35 +111,44 @@ export default {
         });
 
         const getFilters = () => {
-            console.log('Getting filters with:', postFilter.value); // Отладочное сообщение
             axios.get('/admin/posts', {
                 params: postFilter.value
             }).then(res => {
-                console.log('Data fetched:', res.data); // Отладочное сообщение
                 postsData.value = res.data;
-                console.log('Updated postsData:', postsData.value); // Отладочное сообщение
             }).catch(error => {
                 console.error('Error fetching filters:', error);
             });
         };
 
         const setPage = (url) => {
-            console.log('Setting page with URL:', url); // Отладочное сообщение
             const params = new URLSearchParams(url.split('?')[1]);
             postFilter.value.page = params.get('page') || 1;
-            console.log('Updated postFilter:', postFilter.value); // Отладочное сообщение
             getFilters();
         };
+
         const deletePost = (id) => {
-          axios.delete(`/posts/${id}` )
-              .then(res=>{
-                  getFilters();
-              });
-
+            axios.delete(`/posts/${id}`)
+                .then(res => {
+                    getFilters();
+                });
         };
-        onMounted(() => {
-            console.log('Component mounted, initial page:', postFilter.value.page);
 
+        const toggleBlock = (post) => {
+            const action = post.is_blocked ? 'unblock' : 'block';
+            const url = route(`admin.posts.${action}`, { id: post.id });
+
+            axios.patch(url, { reason: 'Admin toggled' })
+                .then(response => {
+                    post.is_blocked = !post.is_blocked;
+                })
+                .catch(error => {
+                    console.error(`Error ${action}ing post:`, error);
+                    alert(`Failed to ${action} post. Please try again.`);
+                });
+        };
+
+        onMounted(() => {
+            getFilters();
         });
 
         watch(postsData, (newData) => {
@@ -131,7 +160,8 @@ export default {
             postFilter,
             getFilters,
             setPage,
-            deletePost
+            deletePost,
+            toggleBlock
         };
     }
 };

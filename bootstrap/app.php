@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
            \App\Http\Middleware\IsAdminMiddleware::class,
            \App\Http\Middleware\UserRoleMiddleware::class,
+//             \App\Http\Middleware\EnsureUserHasSelectedProfileAndIsAdmin::class,
 
         ]);
 

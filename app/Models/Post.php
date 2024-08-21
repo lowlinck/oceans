@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 
+use App\Traits\Blockable;
 use App\Traits\HasFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use PhpParser\Node\Expr\Cast\String_;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes, HasFilter;
+    use HasFactory, SoftDeletes, HasFilter,  Blockable;
 
     public function categories()
     {

@@ -33,6 +33,7 @@ class UserRoleMiddleware
             } else {
                 $roles = $roles->unique()->values();
             }
+
             // Делаем роли доступными везде через Inertia
             Inertia::share('userRoles', $roles->toArray());
         }

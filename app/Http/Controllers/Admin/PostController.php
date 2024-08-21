@@ -37,7 +37,7 @@ class PostController extends Controller
             return $posts;
         }
 
-        return inertia('Admin/Post/Index', compact('posts', 'roles'));
+        return inertia('Admin/Post/Index', compact('posts' ));
     }
 
     /**
@@ -75,7 +75,7 @@ class PostController extends Controller
 
         $post = PostResource::make($post)->resolve();
 
-        return inertia('Post/Show', compact('post'));
+        return inertia('Admin/Post/Show', compact('post'));
     }
 
     /**

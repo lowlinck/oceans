@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -33,7 +32,48 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        $profiles = $user->profiles; // Предполагается, что у пользователя есть связь profiles
+
+        if ($profiles->count() === 1) {
+            // Если у пользователя только один профиль, автоматически выбираем его
+            session(['selected_profile' => $profiles->first()->id]);
+            return redirect()->intended(route('dashboard'));
+        }
+
+        // Возвращаем страницу выбора профиля с профилями пользователя
+        return redirect()->route('selectProfile');
+    }
+
+    /**
+     * Display the profile selection view.
+     */
+    public function showSelectProfile(): Response
+    {
+        $user = Auth::user();
+        $profiles = $user->profiles; // Предполагается, что у пользователя есть связь profiles
+
+        return Inertia::render('Auth/SelectProfile', [
+            'profiles' => $profiles,
+        ]);
+    }
+
+    /**
+     * Handle profile selection.
+     */
+    public function selectProfile(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'profile_id' => 'required|exists:profiles,id',
+        ]);
+
+        $profile = $request->input('profile_id');
+
+
+
+        session(['selected_profile' => $profile]);
+
+        return redirect()->route('admin.posts.index');
     }
 
     /**

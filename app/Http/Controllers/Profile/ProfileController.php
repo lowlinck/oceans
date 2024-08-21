@@ -10,6 +10,7 @@ class ProfileController extends Controller
 {
     public function dashboard()
     {
+
         return inertia('Profile/Dashboard');
     }
 

@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col">
-        <b>Переход пао ссылке</b>
-        <Link :href="route('profiles.posts.index')">перейти на index</Link>
+        <b>Переход по ссылке</b>
+<!--        <Link :href="route('profiles.posts.index')">перейти на index</Link>-->
+
     </div>
 </template>
 

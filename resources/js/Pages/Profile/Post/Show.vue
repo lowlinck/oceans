@@ -31,6 +31,7 @@ export default {
         <div class="mb-4 pb-4 border-b border-gray-300">
             {{ post.content }}
         </div>
+
         <div class="mb-4 pb-4 border-b border-gray-300">
             <img :src="post.preview_url" :alt="post.title">
         </div>
