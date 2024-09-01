@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers;
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -9,9 +9,17 @@ class BlockController extends Controller
 {
     public function block(Request $request, $type, $id)
     {
-        dd(1111111);
+
         $model = $this->getModel($type);
-        $model::blockById($id, $request->input('reason', 'Blocked by admin'));
+        $record = $model::find($id);
+
+        if (!$record) {
+            return response()->json(['error' => 'Record not found.'], 404);
+        }
+
+        $record->is_blocked = true; // предположим, что у модели есть поле is_blocked
+        $record->blocked_reason = $request->input('reason', 'Blocked by admin');
+        $record->save();
 
         return response()->json(['status' => 'blocked']);
     }
@@ -19,11 +27,18 @@ class BlockController extends Controller
     public function unblock($type, $id)
     {
         $model = $this->getModel($type);
-        $model::unblockById($id);
+        $record = $model::find($id);
+
+        if (!$record) {
+            return response()->json(['error' => 'Record not found.'], 404);
+        }
+
+        $record->is_blocked = false;
+        $record->blocked_reason = null; // очищаем причину блокировки, если нужно
+        $record->save();
 
         return response()->json(['status' => 'unblocked']);
     }
-
     protected function getModel($type)
     {
         $models = [

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateRoleRequest;
+use App\Http\Resources\User\RoleUserResource;
+use App\Models\Profile;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -50,9 +54,19 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRoleRequest $request, Profile $profile)
     {
-        //
+        $roleData = $request->validated();
+
+        $profile = Profile::findOrFail($roleData['profile_id']);
+        $profile->syncRoles($roleData['title']);
+        $profile->load('roles');
+////        $role = Role::updateOrCreate(
+////            ['profile_id' => $roleData['profile_id']],
+////            ['title' => $roleData['title']]
+////        );
+////        $role = RoleUserResource::make($role)->resolve();
+        return redirect()->back()->with('success', 'Role updated successfully');
     }
 
     /**

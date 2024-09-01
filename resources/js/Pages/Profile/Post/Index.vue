@@ -53,7 +53,8 @@
                         </Link>
                     </td>
                     <td class="border px-4 py-2">
-                        <input type="checkbox" v-model="post.is_blocked" @change="toggleBlock(post)" />
+                        <input type="checkbox" v-model="post.is_blocked" @change="toggleBlock(post, 'posts')" />
+                        {{post.is_blocked}}
                     </td>
                     <td class="py-2 px-4">
                         <div class="flex justify-between">
@@ -97,7 +98,7 @@ export default {
     props: {
         postsProfile: {
             type: Object,
-            required: true
+
         },
         name:String,
 
@@ -105,6 +106,7 @@ export default {
     },
     setup(props) {
         const postsProfileData = ref(props.postsProfile);
+        console.log(postsProfileData);
         const name = ref(props.name);
 
         const postFilter = ref({
@@ -112,6 +114,7 @@ export default {
             content: '',
             description: '',
             createdAtTo: '',
+            is_blocked:'',
             page: 1
         });
 
@@ -135,22 +138,30 @@ export default {
             axios.delete(`/posts/${id}`)
                 .then(res => {
                     getFilters();
-                });
+                }).catch(error => {
+                console.error('Error deleting post:', error);
+            });
         };
 
         const toggleBlock = (post) => {
             const action = post.is_blocked ? 'unblock' : 'block';
-            const url = route(`admin.posts.${action}`, {id: post.id});
+            console.log(action);
 
-            axios.patch(url, {reason: 'Admin toggled'})
+            const url = route('admin.block', { type: 'posts', id: post.id });
+            console.log('Your url is: ' + url);  // Убедитесь, что этот лог выводится
+
+            axios.patch(url, { reason: 'Admin toggled' })
                 .then(response => {
-                    post.is_blocked = !post.is_blocked;
+                    // post.is_blocked = !post.is_blocked;
                 })
                 .catch(error => {
                     console.error(`Error ${action}ing post:`, error);
                     alert(`Failed to ${action} post. Please try again.`);
                 });
         };
+
+
+
 
         // onMounted(() => {
         //     getFilters();
@@ -172,7 +183,7 @@ export default {
         };
     },
     mounted() {
-        console.log(this.posts)
+
     }
 };
 </script>

@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminProfilePostController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BlockController;
-use App\Http\Middleware\EnsureUserHasSelectedProfileAndIsAdmin;
+
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth',\App\Http\Middleware\IsAdminMiddleware::class] )->prefix('admin')->group(function () {
+
+
+Route::middleware(['auth','profile.role:admin'] )->prefix('admin')->group(function () {
+
     Route::get('/posts', [App\Http\Controllers\Admin\PostController::class, 'index'])->name('admin.posts.index');
     Route::post('/posts', [App\Http\Controllers\Admin\PostController::class, 'store'])->name('admin.posts.store');
     Route::get('/posts/create', [App\Http\Controllers\Admin\PostController::class, 'create'])->name('admin.posts.create');
@@ -17,10 +21,11 @@ Route::middleware(['auth',\App\Http\Middleware\IsAdminMiddleware::class] )->pref
     Route::get('/categories', [App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('admin.categories.index');
     Route::get('/categories/create', [App\Http\Controllers\Admin\CategoryController::class, 'show'])->name('admin.categories.show');
     Route::get('/users', [UserController::class,'index'])->name('admin.users.index');
-    Route::patch('posts/{id}/block', [BlockController::class, 'block'])->name('admin.posts.block');
-    Route::patch('posts/{id}/unblock', [BlockController::class, 'unblock'])->name('admin.posts.unblock');
+    Route::patch('/posts/{type}/{id}/block', [BlockController::class, 'block'])->name('admin.block');
+    Route::patch('/posts/{type}/{id}/unblock', [BlockController::class, 'unblock'])->name('admin.unblock');
     Route::get('profile/posts/{profile_id}', [AdminProfilePostController::class, 'getPosts'])->name('admin.profile.posts');
     Route::get('profile/posts/create', [AdminProfilePostController::class, 'create'])->name('profiles.posts.create');
     Route::get('profile/posts/show', [AdminProfilePostController::class, 'show'])->name('profiles.posts.show');
-    Route::patch('profile/posts/{profile_id}', [AdminProfilePostController::class, 'updateRole'])->name('admin.profile.updaterole');
+    Route::patch('profile/posts/{profile_id}', [RoleController::class, 'update'])->name('admin.profile.updaterole');
+
 });

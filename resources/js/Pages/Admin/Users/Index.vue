@@ -8,7 +8,6 @@
                 <th class="py-2 px-4 bg-gray-800 text-white">Profile</th>
                 <th class="py-2 px-4 bg-gray-800 text-white">Role</th>
                 <th class="py-2 px-4 bg-gray-800 text-white">Posts</th>
-
             </tr>
             </thead>
             <tbody>
@@ -19,7 +18,7 @@
                         <td class="border px-4 py-2" v-else></td>
                         <td class="border px-4 py-2">{{ profile.first_name }}</td>
                         <td class="border px-4 py-2">
-                            <select v-model="profile.localRole" @change="updateRole(profile)" class="ml-2 select-role">
+                            <select v-model="profile.selectedRole" @change="updateRole(profile)" class="ml-2 select-role">
                                 <option value="" disabled>Select Role</option>
                                 <option v-for="role in enumRoles" :key="role" :value="role">{{ role }}</option>
                             </select>
@@ -27,7 +26,6 @@
                         <td class="border px-4 py-2">
                             <Link :href="route('admin.profile.posts', profile.id)" class="text-blue-500 hover:underline">View Posts</Link>
                         </td>
-
                     </tr>
                 </template>
             </template>
@@ -50,7 +48,6 @@ export default {
     },
     props: {
         users: Array,
-        roles: Array,
         enumRoles: Array
     },
     data() {
@@ -62,27 +59,20 @@ export default {
         initializeUsersData(users) {
             return users.map(user => {
                 user.profiles.forEach(profile => {
-                    profile.role = this.getRoleByProfileId(profile.id) || { title: 'No Role' };
-                    profile.localRole = profile.role.title; // Добавляем локальное свойство для v-model
-                    profile.is_blocked = profile.is_blocked; // Добавляем поле блокировки
+                    profile.is_blocked = profile.is_blocked || false; // Инициализация флага блокировки
+                    profile.selectedRole = profile.roles.length ? profile.roles[0].name : ''; // Инициализация выбранной роли
+
+                    // Лог для проверки данных
+                    console.log(`Profile ID: ${profile.id}, Name: ${profile.first_name}, Selected Role: ${profile.selectedRole}`);
                 });
                 return user;
             });
         },
-        getRoleByProfileId(profileId) {
-            const role = this.roles.find(role => role.profile_id === profileId);
-            return role ? { title: role.title } : null;
-        },
         updateRole(profile) {
-            console.log('Updating role for profile:', profile.id, 'New role:', profile.localRole);
-
-            if (profile.localRole === profile.role.title) {
-                console.log('Role has not changed');
-                return;
-            }
+            console.log('Updating role for profile:', profile.id, 'New role:', profile.selectedRole);
 
             let roleData = new FormData();
-            roleData.append('title', profile.localRole);
+            roleData.append('title', profile.selectedRole);
             roleData.append('profile_id', profile.id);
             roleData.append('_method', 'patch');
 
@@ -91,21 +81,8 @@ export default {
             axios.post(updateRoleUrl, roleData)
                 .then(res => {
                     console.log('Role updated successfully', res.data);
-
-                    profile.role.title = res.data.title;
-
-                    const updatedRole = {
-                        profile_id: profile.id,
-                        title: res.data.title
-                    };
-                    const roleIndex = this.roles.findIndex(r => r.profile_id === profile.id);
-                    if (roleIndex !== -1) {
-                        this.roles.splice(roleIndex, 1, updatedRole);
-                    } else {
-                        this.roles.push(updatedRole);
-                    }
-                    console.log('Updated profile:', profile);
-                    console.log('Updated roles:', this.roles);
+                    // Обновляем роль в профиле
+                    // profile.roles[0].name = res.data.title;
                 })
                 .catch(error => {
                     console.error('Error updating role:', error);
@@ -114,7 +91,6 @@ export default {
         },
         toggleBlock(profile) {
             const action = profile.is_blocked ? 'unblock' : 'block';
-            const type = 'post'; // или 'comment', если это для комментариев
             const routeName = `admin.posts.${action}`;
 
             const url = route(routeName, { id: profile.id });
@@ -122,17 +98,17 @@ export default {
             axios.patch(url, { reason: 'Admin toggled' })
                 .then(response => {
                     console.log(`Profile ${action}ed successfully`, response.data);
+                    profile.is_blocked = !profile.is_blocked;
                 })
                 .catch(error => {
                     console.error(`Error ${action}ing profile:`, error);
                     alert(`Failed to ${action} profile. Please try again.`);
-                    profile.is_blocked = !profile.is_blocked; // откатываем изменение в случае ошибки
+                    profile.is_blocked = !profile.is_blocked; // Откат в случае ошибки
                 });
         }
     },
     mounted() {
         console.log('Users:', this.users);
-        console.log('Roles:', this.roles);
         console.log('Enum Roles:', this.enumRoles);
     }
 };

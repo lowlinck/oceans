@@ -15,12 +15,11 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::with(['profiles', 'profiles.roles'])->get();  // Получаем пользователей с профилями и ролями
+        $users = User::with('profiles.roles')->get();  // Получаем пользователей с профилями и ролями
         $enumRoles = RoleEnum::cases();
-        $roles = Role::all();
 
 
 
-        return inertia('Admin/Users/Index', compact('users', 'roles', 'enumRoles'));
+        return inertia('Admin/Users/Index', compact('users',  'enumRoles'));
     }
 }

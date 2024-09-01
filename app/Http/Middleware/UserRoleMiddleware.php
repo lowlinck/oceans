@@ -16,26 +16,14 @@ class UserRoleMiddleware
      */
     public function handle($request, Closure $next)
     {
+//        dd(session('selected_role'));
         if (Auth::check()) {
-            $user = Auth::user();
+            // Получаем роль из сессии
+            $role = session('selected_role'); // Если роли нет, по умолчанию будет "guest"
+                     // Делаем роль доступной через Inertia
 
-            // Получаем все профили пользователя с ролями
-            $profiles = $user->profiles()->with('roles')->get();
 
-            // Обрабатываем профили и роли
-            $roles = $profiles->flatMap(function ($profile) {
-                return $profile->roles->pluck('title');
-            });
-
-            // Если ни одна роль не найдена, добавляем "guest"
-            if ($roles->isEmpty()) {
-                $roles = collect(['guest']);
-            } else {
-                $roles = $roles->unique()->values();
-            }
-
-            // Делаем роли доступными везде через Inertia
-            Inertia::share('userRoles', $roles->toArray());
+            Inertia::share('userRole', $role);
         }
 
         return $next($request);

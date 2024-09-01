@@ -6,9 +6,16 @@
                 <Link :href="route('dashboard')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     Dashboard
                 </Link>
-                <Link v-if="userRoles.includes('admin')" :href="route('admin.posts.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <Link :href="route('admin.posts.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     Posts
                 </Link>
+                <Link :href="route('admin.categories.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    Category
+                </Link>
+                <Link :href="route('admin.users.index')" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    Users
+                </Link>
+                <!-- Add more links as needed -->
             </div>
         </aside>
 
@@ -16,7 +23,7 @@
         <div class="flex-grow flex flex-col">
             <!-- Header -->
             <header class="bg-gray-800 text-white p-4 md:p-6 lg:p-8 flex justify-between items-center">
-                <Link :href="route('dashboard')" class="text-2xl md:text-3xl text-white lg:text-4xl font-bold">{{ userRoles.join(', ') }}</Link>
+                <Link :href="route('dashboard')" class="text-2xl md:text-3xl lg:text-4xl font-bold">{{role}}</Link>
                 <a class="text-amber-400 " href="#"  @click="logout">Logout</a>
             </header>
 
@@ -45,39 +52,40 @@
 <script>
 import {Link} from "@inertiajs/vue3";
 import {route} from 'ziggy-js';
-
 export default {
-    name: 'MainLayout',
+    name: 'AdminLayout',
     components: {
         Link
     },
     props: {
-        userRoles: {
-            type: Array,
-            default: () => ['guest']
-        }
+
+        role:String,
+    },
+
+    data() {
+        return {
+
+        };
     },
     methods: {
-        route(name) {
-            const routes = {
-                'dashboard': '/dashboard',
-                'admin.posts.index': '/admin/posts',
-                'logout': '/logout'
-            };
-            return routes[name];
+        logout(){
+            axios.post('/logout', {
+
+            }).then(res => {
+                setTimeout(() => {
+                    window.location.href = route('login');
+                }, 100); // Задержка в 100 мс перед переходом
+            }).catch(error => {
+                console.error('Error logout:', error);
+            });
+        },
+        // Your methods here
+        create() {
+            // Your method implementation
         }
     },
-    logout(){
-        axios.post('/logout', {
-
-        }).then(res => {
-            window.location.href = route('login');
-        }).catch(error => {
-            console.error('Error logout:', error);
-        });
-    },
-    mounted() {
-        console.log('User roles:', this.userRoles);
+    computed: {
+        // Your computed properties here
     }
 };
 </script>

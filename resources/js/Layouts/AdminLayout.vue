@@ -23,7 +23,7 @@
         <div class="flex-grow flex flex-col">
             <!-- Header -->
             <header class="bg-gray-800 text-white p-4 md:p-6 lg:p-8 flex justify-between items-center">
-                <Link :href="route('dashboard')" class="text-2xl md:text-3xl lg:text-4xl font-bold">{{userRoles.join(', ')}}</Link>
+                <Link :href="route('dashboard')" class="text-2xl md:text-3xl lg:text-4xl font-bold">{{role}}</Link>
                 <a class="text-amber-400 " href="#"  @click="logout">Logout</a>
             </header>
 
@@ -58,10 +58,8 @@ export default {
         Link
     },
     props: {
-        userRoles: {
-            type: Array,
-            default: () => ['guest']
-        }
+
+        role:String,
     },
 
     data() {
@@ -74,7 +72,9 @@ export default {
             axios.post('/logout', {
 
             }).then(res => {
-                window.location.href = route('login');
+                setTimeout(() => {
+                    window.location.href = route('login');
+                }, 100); // Задержка в 100 мс перед переходом
             }).catch(error => {
                 console.error('Error logout:', error);
             });

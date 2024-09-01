@@ -11,6 +11,7 @@ class Role extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'roleses';
     public function profile()
     {
         return $this->belongsTo(Role::class);

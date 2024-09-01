@@ -29,17 +29,7 @@ AdminProfilePostController extends Controller
             'postsProfile','name'));
     }
 
-    public function updateRole(UpdateRoleRequest $request, Profile $profile)
-    {
 
-        $roleData = $request->validated();
-        $role = Role::updateOrCreate(
-            ['profile_id' => $roleData['profile_id']],
-            ['title' => $roleData['title']]
-        );
-        $role = RoleUserResource::make($role)->resolve();
-        return $role;
-    }
     public function create()
     {
         return inertia('Profile/Post/Create');
