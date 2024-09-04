@@ -16,11 +16,12 @@ class CategoryController extends Controller
     public function index()
 
     {
-        $categories = Category::get();
+        $categories = Category::with('posts')->get();
 
         $categories= CategoryResource::collection($categories)->resolve();
 
-        return inertia('Category/Index', compact('categories'));
+
+        return inertia('Admin/Category/Index', compact('categories'));
 
     }
 

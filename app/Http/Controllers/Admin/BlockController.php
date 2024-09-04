@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -7,24 +6,7 @@ use Illuminate\Http\Request;
 
 class BlockController extends Controller
 {
-    public function block(Request $request, $type, $id)
-    {
-
-        $model = $this->getModel($type);
-        $record = $model::find($id);
-
-        if (!$record) {
-            return response()->json(['error' => 'Record not found.'], 404);
-        }
-
-        $record->is_blocked = true; // предположим, что у модели есть поле is_blocked
-        $record->blocked_reason = $request->input('reason', 'Blocked by admin');
-        $record->save();
-
-        return response()->json(['status' => 'blocked']);
-    }
-
-    public function unblock($type, $id)
+    public function toggleBlock(Request $request, $type, $id)
     {
         $model = $this->getModel($type);
         $record = $model::find($id);
@@ -33,12 +15,14 @@ class BlockController extends Controller
             return response()->json(['error' => 'Record not found.'], 404);
         }
 
-        $record->is_blocked = false;
-        $record->blocked_reason = null; // очищаем причину блокировки, если нужно
+        // Обновляем поле is_blocked в зависимости от переданного значения
+        $record->is_blocked = $request->input('is_blocked');
+        $record->blocked_reason = $request->input('reason', $record->is_blocked ? 'Blocked by admin' : null);
         $record->save();
 
-        return response()->json(['status' => 'unblocked']);
+        return response()->json(['status' => $record->is_blocked ? 'blocked' : 'unblocked']);
     }
+
     protected function getModel($type)
     {
         $models = [

@@ -13,9 +13,9 @@
             <div>
                 <input type="date" v-model="postFilter.createdAtTo">
             </div>
-            <secondary-button class="bg-sky-700 text-white focus:ring-indigo-900 hover:bg-blue-600"  >
+            <secondary-button class="bg-sky-700 text-blue-700 focus:ring-indigo-900 hover:bg-blue-600"  >
                 <a @click.prevent="getFilters"  href="#">Find</a>
-                </secondary-button>
+            </secondary-button>
         </div>
         <div class="items-center">
             <secondary-button>
@@ -24,7 +24,7 @@
         </div>
 
         <div>
-            <h1 class="text-2xl font-bold mb-4">Posts</h1>
+            <h1 class="text-2xl font-bold mb-4">Category:  <b class="text-blue-700">{{  capitalizedName }}</b></h1>
             <table class="min-w-full bg-white">
                 <thead>
                 <tr>
@@ -37,7 +37,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="post in postsData.data" :key="post.id" class="border-b">
+                <tr v-for="post in postsCategoryData.data" :key="post.id" class="border-b">
                     <td class="py-2 px-4">
                         <Link :href="route('admin.posts.show', post.id)" class="mr-4">{{ post.title }}</Link>
                     </td>
@@ -54,6 +54,7 @@
                     </td>
                     <td class="border px-4 py-2">
                         <input type="checkbox" v-model="post.is_blocked" @change="toggleBlock(post, 'posts')" />
+
                     </td>
                     <td class="py-2 px-4">
                         <div class="flex justify-between">
@@ -70,8 +71,8 @@
             </table>
         </div>
 
-        <div v-if="postsData && postsData.meta && postsData.meta.links">
-            <template v-for="link in postsData.meta.links" :key="link.label">
+        <div v-if="postsCategoryData && postsCategoryData.meta && postsCategoryData.meta.links">
+            <template v-for="link in postsCategoryData.meta.links" :key="link.label">
                 <a class="inline-block p-2 bg-sky-600 text-white mr-4" href="#" v-if="link.url" v-html="link.label"
                    @click.prevent="setPage(link.url)"></a>
             </template>
@@ -86,27 +87,36 @@ import { route } from 'ziggy-js';
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import axios from 'axios';
+import {CAPITALIZE} from "@vue/compiler-core";
 
 export default {
     name: 'Index',
+    methods: {CAPITALIZE},
     layout: AdminLayout,
     components: {
         SecondaryButton,
         Link
     },
     props: {
-        posts: {
+        postsCategory: {
             type: Object,
-            required: true
-        }
+
+        },
+        name:String,
+
+
     },
     setup(props) {
-        const postsData = ref(props.posts);
+        const postsCategoryData = ref(props.postsCategory);
+        console.log(postsCategoryData);
+        const name = ref(props.name);
+
         const postFilter = ref({
             title: '',
             content: '',
             description: '',
             createdAtTo: '',
+            is_blocked:'',
             page: 1
         });
 
@@ -130,42 +140,54 @@ export default {
             axios.delete(`/posts/${id}`)
                 .then(res => {
                     getFilters();
-                });
+                }).catch(error => {
+                console.error('Error deleting post:', error);
+            });
         };
 
         const toggleBlock = (post) => {
-            const action = post.is_blocked ? 'unblock' : 'block';
-            console.log(action);
+            const url = route('admin.toggleBlock', { type: 'posts', id: post.id });
 
-            const url = route('admin.block', { type: 'posts', id: post.id });
-            console.log('Your url is: ' + url);  // Убедитесь, что этот лог выводится
-
-            axios.patch(url, { reason: 'Admin toggled' })
+            axios.patch(url, { is_blocked: post.is_blocked, reason: 'Admin toggled' })
                 .then(response => {
-                    // post.is_blocked = !post.is_blocked;
+                    console.log(`Post ${post.id} is now ${post.is_blocked ? 'blocked' : 'unblocked'}.`);
                 })
                 .catch(error => {
-                    console.error(`Error ${action}ing post:`, error);
-                    alert(`Failed to ${action} post. Please try again.`);
+                    console.error(`Error updating block status:`, error);
+                    alert(`Failed to update block status. Please try again.`);
                 });
         };
 
-        onMounted(() => {
-            getFilters();
-        });
 
-        watch(postsData, (newData) => {
+
+
+
+         // onMounted(() => {
+         //     getFilters();
+         // });
+
+        watch(postsCategoryData, (newData) => {
             console.log('postsData updated:', newData); // Отладочное сообщение
         });
 
         return {
-            postsData,
+            postsCategoryData,
             postFilter,
             getFilters,
             setPage,
             deletePost,
-            toggleBlock
+            toggleBlock,
+            name
+
         };
+    },
+    computed: {
+        capitalizedName() {
+            return this.name.charAt(0).toUpperCase() + this.name.slice(1);
+        }
+    },
+    mounted() {
+
     }
 };
 </script>

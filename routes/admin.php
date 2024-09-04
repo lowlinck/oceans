@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminProfilePostController;
+use App\Http\Controllers\Admin\CategoryPostsController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BlockController;
@@ -21,9 +22,11 @@ Route::middleware(['auth','profile.role:admin'] )->prefix('admin')->group(functi
     Route::get('/categories', [App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('admin.categories.index');
     Route::get('/categories/create', [App\Http\Controllers\Admin\CategoryController::class, 'show'])->name('admin.categories.show');
     Route::get('/users', [UserController::class,'index'])->name('admin.users.index');
-    Route::patch('/posts/{type}/{id}/block', [BlockController::class, 'block'])->name('admin.block');
-    Route::patch('/posts/{type}/{id}/unblock', [BlockController::class, 'unblock'])->name('admin.unblock');
+    Route::patch('/posts/{type}/{id}/toggle-block', [BlockController::class, 'toggleBlock'])->name('admin.toggleBlock');
+
+
     Route::get('profile/posts/{profile_id}', [AdminProfilePostController::class, 'getPosts'])->name('admin.profile.posts');
+    Route::get('category/posts/{category_id}', [CategoryPostsController::class, 'getPosts'])->name('admin.category.posts');
     Route::get('profile/posts/create', [AdminProfilePostController::class, 'create'])->name('profiles.posts.create');
     Route::get('profile/posts/show', [AdminProfilePostController::class, 'show'])->name('profiles.posts.show');
     Route::patch('profile/posts/{profile_id}', [RoleController::class, 'update'])->name('admin.profile.updaterole');

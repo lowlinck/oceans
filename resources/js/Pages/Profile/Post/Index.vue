@@ -54,7 +54,7 @@
                     </td>
                     <td class="border px-4 py-2">
                         <input type="checkbox" v-model="post.is_blocked" @change="toggleBlock(post, 'posts')" />
-                        {{post.is_blocked}}
+
                     </td>
                     <td class="py-2 px-4">
                         <div class="flex justify-between">
@@ -144,21 +144,18 @@ export default {
         };
 
         const toggleBlock = (post) => {
-            const action = post.is_blocked ? 'unblock' : 'block';
-            console.log(action);
+            const url = route('admin.toggleBlock', { type: 'posts', id: post.id });
 
-            const url = route('admin.block', { type: 'posts', id: post.id });
-            console.log('Your url is: ' + url);  // Убедитесь, что этот лог выводится
-
-            axios.patch(url, { reason: 'Admin toggled' })
+            axios.patch(url, { is_blocked: post.is_blocked, reason: 'Admin toggled' })
                 .then(response => {
-                    // post.is_blocked = !post.is_blocked;
+                    console.log(`Post ${post.id} is now ${post.is_blocked ? 'blocked' : 'unblocked'}.`);
                 })
                 .catch(error => {
-                    console.error(`Error ${action}ing post:`, error);
-                    alert(`Failed to ${action} post. Please try again.`);
+                    console.error(`Error updating block status:`, error);
+                    alert(`Failed to update block status. Please try again.`);
                 });
         };
+
 
 
 

@@ -29,6 +29,7 @@ class  PostResource extends JsonResource
             'category_id' => $this->category_id ?? 2,
             'tags' => TagsResource::make($this->tags)->resolve(),
             'author_id' =>$this->author_id,
+            'is_blocked' => $this->is_blocked,
             'view' => $this->view,
         ];
     }
